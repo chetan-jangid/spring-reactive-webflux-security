@@ -1,6 +1,8 @@
 package com.security.reactivesecurity.config.filter;
 
+import com.security.reactivesecurity.exception.JwtTokenException;
 import com.security.reactivesecurity.util.token.JwtTokenProvider;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
@@ -10,6 +12,7 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 public record JwtTokenAuthenticationFilter(JwtTokenProvider tokenProvider) implements WebFilter {
 
     @Override
@@ -22,7 +25,10 @@ public record JwtTokenAuthenticationFilter(JwtTokenProvider tokenProvider) imple
                         ReactiveSecurityContextHolder.withAuthentication(tokenProvider.getAuthentication(token))
                 );
             } catch (Exception e) {
-                e.printStackTrace();
+                if (e instanceof JwtTokenException) {
+                    return Mono.error(new JwtTokenException(e.getMessage()));
+                }
+                log.error(e.getMessage());
             }
         }
         return chain.filter(exchange);
