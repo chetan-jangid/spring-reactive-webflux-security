@@ -55,7 +55,7 @@ public class JwtTokenProvider extends TokenProvider {
                 claims.get(AUTHORITIES_KEY).toString()
         )
                 .stream()
-                .map(a -> new SimpleGrantedAuthority(String.format("ROLE_%s", a.getAuthority())))
+                .map(a -> new SimpleGrantedAuthority(a.getAuthority()))
                 .collect(Collectors.toList());
         User principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
@@ -81,8 +81,7 @@ public class JwtTokenProvider extends TokenProvider {
     }
 
     private String authoritiesToString(Collection<? extends GrantedAuthority> authorities) {
-        return authorities.stream().map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+        return authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
     }
 
 }

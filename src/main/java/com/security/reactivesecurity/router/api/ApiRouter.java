@@ -36,7 +36,7 @@ public class ApiRouter {
         if (username.isPresent() && password.isPresent()) {
             Authentication authentication = authManager.toAuthentication(
                     username.get(), password.get(), List.of(
-                            new SimpleGrantedAuthority(username.get().equals("user") ? "USER" : "ADMIN")
+                            new SimpleGrantedAuthority(username.get().equals("user") ? "ROLE_USER" : "ROLE_ADMIN")
                     )
             );
             return ServerResponse.ok().body(
